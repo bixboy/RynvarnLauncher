@@ -1,0 +1,173 @@
+* {
+  font-family: sans-serif;
+}
+
+#title {
+  color: lightseagreen;
+  margin-bottom: 11px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-image: url(../images/bg1.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+  height: 100vh;
+}
+
+.empty {
+  flex: 1;
+}
+
+#dotes {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: 3px;
+}
+
+#loginbtn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+@keyframes dotAnimation {
+  0%     { transform: translateY(0); }
+  50%    { transform: translateY(-10px); }
+  100%   { transform: translateY(0); }
+}
+
+#dot {
+  display: inline-block;
+  transition: all 1s ease 0s;
+  animation: dotAnimation 1s infinite;
+  animation-delay: 0s, 0.3s, 0.6s; /* Delay for each dot */
+  font-size: 20px;
+}
+
+#dot:nth-child(2) {
+  animation-delay: 0.1s, 0.4s, 0.7s; /* Adjust delay for second dot */
+}
+
+#dot:nth-child(3) {
+  animation-delay: 0.2s, 0.5s, 0.8s; /* Adjust delay for third dot */
+}
+
+.loginform {
+  background-color: rgba(255, 255, 255, 0.75);
+  clip-path: polygon(6% 0, 100% 0%, 100% 100%, 1% 100%);
+  flex: 1;
+  height: 100vh;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+  transition-duration: 0.5s;
+}
+
+.loginform:hover {
+  clip-path: polygon(5% 0, 100% 0%, 100% 100%, 0% 100%);
+  transition-duration: 0.5s;
+}
+
+#logo {
+  width: 256px;
+  height: 256px;
+}
+
+button {
+  background-color: lightseagreen;
+  color: white;
+  border: none;
+  font-size: 17px;
+  padding: 11px 15px;
+  border-radius: 5px;
+  outline: none;
+  box-shadow: 0px 5px 5px lightseagreen;
+  transition: 0.5s ease-out;
+}
+button:not([disabled]):hover,
+button:not([disabled]):focus {
+  background-color: orange;
+  color: white;
+  box-shadow: 0px 5px 5px orange;
+  transform: scale(0.95, 0.95);
+}
+.alert {
+  background: tomato;
+  color: white;
+  padding: 10px;
+}
+
+.boxLogin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+
+.checkbox{
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  margin-top: 15px;
+}
+
+#checkbox{
+  height: 22px;
+  width: 26px;
+}
+
+#txtCheckbox{
+  color: #167d77;
+  font-weight: bold;
+}
+
+#snackbar {
+  visibility: hidden;
+  min-width: 200px;
+  background-color: white;
+  color: black;
+  border-top: 5px orange solid;
+  box-shadow: 0px 2px 5px orange;
+  text-align: center;
+  border-radius: 4px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1;
+  bottom: 30px;
+}
+#snackbar.show {
+  visibility: visible;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@keyframes fadein {
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+  to {
+    bottom: 30px;
+    opacity: 1;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    bottom: 30px;
+    opacity: 1;
+  }
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
+}
