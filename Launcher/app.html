@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="Asset\css\app.css">
+    <title>Rinvarn</title>
+  </head>
+
+  <body>
+
+    <div id="optionMenu" class="modal">
+        <div id="modal-content" class="modal-content">
+          <div class="modal-header">
+            <span class="close">&times;</span>
+            <h2>Options</h2>
+          </div>
+          <div class="modal-body">
+            <b>Mémoire vive :</b>
+            <select id="ram">
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+            </select>
+            GO<br /><br />
+            <button id="deco">Déconnexion</button>
+          </div>
+        </div>
+      </div>
+      <section id="panel">
+        <img src="https://minotar.net/avatar/MHF_Steve/100.png" id="skin" /><br />
+        Bienvenue <b id="pseudo">Inconnu</b>
+        <footer>
+          <button id="options">OPTIONS</button>
+          <button id="playbtn">JOUER</button>
+        </footer>
+      </section>
+      <div id="progress-container" class="progress-container" style="opacity: 0;">
+        <div id="progress-bar" class="progress-bar"></div>
+        <div id="progress-text" class="progress-text">0%</div>
+      </div>
+      <div id="snackbar">Chargement en cours...</div>
+  
+      <script>
+        // Importation des modules
+        const ipc = require("electron").ipcRenderer;
+  
+        // Variables globales
+        let pseudo = document.getElementById("pseudo");
+        let skin = document.getElementById("skin");
+        let deco = document.getElementById("deco");
+        let playbtn = document.getElementById("playbtn");
+        let ram = document.getElementById("ram");
+        let progressBar = document.getElementById("progress-bar");
+        let progressText = document.getElementById("progress-text");
+        let progressBarContainer = document.getElementById("progress-container");
+
+        let minecraftPlayed = false;
+        let selectedRAM;
+  
+        // Modal
+        var modal = document.getElementById("optionMenu");
+        var modalContent = document.getElementById("modal-content");
+        var span = document.getElementsByClassName("close")[0];
+
+        //RAM
+        document.addEventListener('DOMContentLoaded', () => {
+          const savedRAM = localStorage.getItem('selectedRAM');
+          selectedRAM = savedRAM ? savedRAM : '4';
+          ram.value = selectedRAM;
+        });
+
+        ram.addEventListener('change', (event) => {
+          selectedRAM = event.target.value;
+          localStorage.setItem('selectedRAM', selectedRAM);
+        });
+
+        document.getElementById("options").addEventListener("click", () => {
+          modal.style.display = "block";
+          modal.style.opacity = 1;
+        });
+
+        span.onclick = function () {
+          modalContent.classList.add('slide-out');
+          modal.style.opacity = 0;
+          
+          modalContent.addEventListener('animationend', () => {
+            modalContent.classList.remove('slide-out');
+            modal.style.display = "none";
+            }, { once: true });
+        };
+
+        window.onclick = function (event) {
+          if (event.target == modal) {
+            modalContent.classList.add('slide-out');
+            modal.style.opacity = 0;
+            
+            modalContent.addEventListener('animationend', () => {
+              modalContent.classList.remove('slide-out');
+              modal.style.display = "none";
+            }, { once: true });
+          }
+        };
+
+        //PLAY
+        playbtn.addEventListener("click", () => {
+          if(!minecraftPlayed){
+            progressBarContainer.style.opacity = 1;
+            ipc.send("play", selectedRAM);
+            dotAnim();
+            minecraftPlayed = true;
+          }
+        })
+
+        ipc.on ("closeMinecraft", (evt) => {
+          minecraftPlayed = false;
+          snack("minecraft fermer");
+          playbtn.innerHTML = "JOUER";
+        });
+
+        function dotAnim() {
+          playbtn.innerHTML = "Demarage du jeu <span id=dotes>...</span>";
+          const dots = document.getElementById("dotes");
+          const dotsArray = dots.innerHTML.split('');
+          dots.innerHTML = '';
+
+          // Creating a span element for each dot
+          dotsArray.forEach((dot, index) => {
+              const dotElement = document.createElement('span');
+              dotElement.innerHTML = dot;
+              dotElement.id = "dot";
+              dots.appendChild(dotElement);
+          });
+        };
+
+        //Progress bar
+        ipc.on("updateProgress", (event, progress) => {
+          progressBar.style.width = progress + "%";
+          progressText.innerText = progress -1 + "%";
+          if(progressText.innerText == "100%")
+          {
+            progressBarContainer.style.opacity = 0;
+          }
+        });
+  
+        // Fonction de Snackbar
+        function snack(txt) {
+          snackbar.innerHTML = txt;
+          snackbar.classList.add("show");
+          setTimeout(() => {
+            snackbar.classList.remove("show");
+          }, 3000);
+        }
+
+        ipc.on('errLaunch', (event, args) => {
+          alert(args);
+          snack(args);
+          minecraftPlayed = false;
+          playbtn.innerHTML = "JOUER";
+        });
+
+        ipc.on("user", (evt, username)=>{
+            pseudo.innerHTML = username;
+            skin.src = `https://minotar.net/avatar/${username}/100.png`;
+            localStorage.setItem("user", JSON.stringify(username));
+        });
+
+        deco.addEventListener("click", () => {
+            ipc.send("logout", JSON.parse(localStorage.getItem("user")));
+            ipc.send("clearToken");
+            localStorage.clear();
+            minecraftPlayed = false;
+            playbtn.innerHTML = "JOUER";
+        });
+      </script>
+  </body>
+</html>

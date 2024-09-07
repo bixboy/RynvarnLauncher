@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="Asset\css\index.css">
+    <title>Rinvarn</title>
+</head>
+<body>
+    <div class="empty"></div>
+
+    <div class="loginform">
+      <img id="logo" src="Asset\images\logo.png" alt="" />
+      <h1 id="title">Bienvenue sur Rinvarn !</h1>
+
+      <div class="boxLogin">
+        <button id="loginbtn">Connexion</button>
+        <div class="checkbox">
+          <input type="checkbox" id="checkbox" name="checkbox">
+          <span id="txtCheckbox">Se souvenir de moi</span>
+        </div>
+      </div>
+
+      <p class="alert">
+        Un compte Mojang est requis pour se connecter. Avec Minecraft d'achetter sur
+        son compte.
+      </p>
+    </div>
+
+    <div id="snackbar">Chargement en cours...</div>
+
+    <script>
+      // Importation des modules
+      const ipc = require("electron").ipcRenderer;
+
+      // Variables utiles
+      let loginBtn = document.getElementById("loginbtn");
+      let snackbar = document.getElementById("snackbar");
+      let checkbox = document.getElementById('checkbox');
+      let isChecked = false;
+
+      // Fonction de Snackbar
+      function snack(txt) {
+        snackbar.innerHTML = txt;
+        snackbar.classList.add("show");
+        setTimeout(() => {
+          snackbar.classList.remove("show");
+        }, 3000);
+      }
+
+      checkbox.addEventListener('change', (event) => {
+        isChecked = event.target.checked;
+      });
+
+      loginBtn.addEventListener("click", () => {
+        if(loginBtn != null) {
+            loginBtn.disabled = true;
+            checkbox.disabled = true;
+            dotAnim();
+            ipc.send("login", isChecked);
+        } else {
+            snack("Veuillez entrer des identifiants");
+        }
+      })
+
+      ipc.on("connexion", (evt) =>{
+        dotAnim();
+      })
+
+      function dotAnim() {
+          loginBtn.innerHTML = "Connexion en cours <span id=dotes>...</span>";
+          const dots = document.getElementById("dotes");
+          const dotsArray = dots.innerHTML.split('');
+          dots.innerHTML = '';
+
+          // Creating a span element for each dot
+          dotsArray.forEach((dot, index) => {
+              const dotElement = document.createElement('span');
+              dotElement.innerHTML = dot;
+              dotElement.id = "dot";
+              dots.appendChild(dotElement);
+          });
+      };
+
+      ipc.on("err", (evt, data) => {
+        alert("Authentication échouer");
+        loginBtn.disabled = false;
+        checkbox.disabled = false;
+        loginBtn.innerHTML = "Connexion";
+      })
+    </script>
+      
+</body>
+</html>

@@ -1,0 +1,7 @@
+directories:
+  output: dist
+  buildResources: build
+appId: fr.bixboy.rynvarn
+icon: Asset/images/logo.png
+files: []
+electronVersion: 28.2.1
